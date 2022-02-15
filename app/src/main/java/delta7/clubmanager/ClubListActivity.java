@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import delta7.clubmanager.databinding.ActivityClubListBinding;
 import delta7.clubmanager.databinding.Addon2Binding;
@@ -23,6 +24,7 @@ public class ClubListActivity extends AppCompatActivity {
         binding = ActivityClubListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        ClubListViewModel viewModel = new ViewModelProvider(this).get(ClubListViewModel.class);
 
         binding.createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
