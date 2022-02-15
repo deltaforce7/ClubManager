@@ -1,8 +1,8 @@
 package delta7.clubmanager;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import delta7.clubmanager.databinding.ActivityClubListBinding;
-import delta7.clubmanager.databinding.ActivityMainBinding;
 import delta7.clubmanager.databinding.Addon2Binding;
 import delta7.clubmanager.databinding.AddonBinding;
 
@@ -40,10 +39,15 @@ public class ClubListActivity extends AppCompatActivity {
                         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getApplicationContext(), dialogBinding.code.getText().toString(), Toast.LENGTH_SHORT).show(); // sign in the user ...
+                                String code = dialogBinding.code.getText().toString();
+                                String name = dialogBinding.namee.getText().toString();
+                                String toast = code + "," + name;
+                                Toast.makeText(getApplicationContext(),toast,Toast.LENGTH_SHORT).show(); // sign in the user ...
 
+                                Intent i = new Intent(ClubListActivity.this, RoomActivity.class);
+
+                                startActivity(i);
                             }
-
                         });
 
 
@@ -70,6 +74,8 @@ public class ClubListActivity extends AppCompatActivity {
                                 String name = dialogBinding.name.getText().toString();
                                 String toast = code + "," + name;
                                 Toast.makeText(getApplicationContext(),toast, Toast.LENGTH_SHORT).show(); // sign in the user ...
+
+                                // Start New Activity
 
                             }
 

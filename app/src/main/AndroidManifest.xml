@@ -27,6 +27,18 @@
             android:name=".ClubListActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".RoomActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".LogActivity"
+            android:exported="true">
+        </activity>
+        <activity android:name=".SignActivity"
+            android:exported="true">
+
+        </activity>
     </application>
 
 </manifest>
