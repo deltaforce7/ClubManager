@@ -1,14 +1,22 @@
 package delta7.clubmanager;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +26,7 @@ import delta7.clubmanager.databinding.Addon2Binding;
 import delta7.clubmanager.databinding.AddonBinding;
 import delta7.clubmanager.model.Club;
 import delta7.clubmanager.model.ClubMember;
+import delta7.clubmanager.model.JoinedClub;
 
 public class ClubListActivity extends AppCompatActivity {
 
@@ -42,6 +51,21 @@ public class ClubListActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.getJoinClub().observe(this, viewState -> {
+            if (viewState == ViewState.SUCCESS) {
+                Intent i = new Intent(ClubListActivity.this, RoomActivity.class);
+                startActivity(i);
+            } else if (viewState == ViewState.NOT_EXIST) {
+                Toast.makeText(this, "Room doesn't exist", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.rooms.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+//        RoomsAdapter adapter= new RoomsAdapter(this, );
+//        binding.rooms.setAdapter(adapter);
+
         binding.createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,15 +83,10 @@ public class ClubListActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 String code = dialogBinding.code.getText().toString();
                                 String name = dialogBinding.namee.getText().toString();
-
-                                List<ClubMember> clubMembers = new ArrayList<>();
-                                clubMembers.add(new ClubMember(Session.person.getName(), Session.person.getId()));
-
-                                Club club = new Club(code, name, Session.person.getId(), new ArrayList<>(), clubMembers);
+                                Club club = new Club(code, name, Session.person.getId(), new ArrayList<>(), new ArrayList<>());
                                 viewModel.createClub(club);
                             }
                         });
-
 
                 builder.create().show();
             }
@@ -89,23 +108,65 @@ public class ClubListActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 String code = dialogBinding.code.getText().toString();
-                                String name = dialogBinding.name.getText().toString();
-                                String toast = code + "," + name;
-                                Toast.makeText(getApplicationContext(),toast, Toast.LENGTH_SHORT).show(); // sign in the user ...
 
-                                // Start New Activity
-
+                                viewModel.joinClub(code);
                             }
-
                         });
-
-
                 builder.create().show();
             }
         });
-
-
     }
 
+    public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> {
+        ArrayList<JoinedClub> data;
+        Context context;
+
+        public RoomsAdapter(Context context,ArrayList<JoinedClub> data) {
+            this.data = data;
+            this.context = context;
+        }
+
+        @NonNull
+        @Override
+        public RoomsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        {
+            LayoutInflater layoutInflater=LayoutInflater.from(parent.getContext());
+            View view = layoutInflater.inflate(R.layout.rooms_list,parent,false);
+            RoomsAdapter.ViewHolder viewHolder= new RoomsAdapter.ViewHolder(view);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RoomsAdapter.ViewHolder holder, int position) {
+//            holder.nameTextView.setText(data.get(position).getName());
+            holder.nameTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, "Clicked on"+data.get(position), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            public TextView nameTextView;
+            public Button messageButton;
+
+
+            public ViewHolder(View itemView) {
+
+                super(itemView);
+
+                nameTextView = (TextView) itemView.findViewById(R.id.contact_name);
+                messageButton = (Button) itemView.findViewById(R.id.message_button);
+            }
+        }
+    }
 
 }
