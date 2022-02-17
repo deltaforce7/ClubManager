@@ -8,17 +8,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import delta7.clubmanager.databinding.ActivityClubListBinding;
-import delta7.clubmanager.databinding.LoginBinding;
+import delta7.clubmanager.databinding.ActivityLoginBinding;
 
 public class LogActivity extends AppCompatActivity {
 
-    LoginBinding binding;
+    ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = LoginBinding.inflate(getLayoutInflater());
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ClubListViewModel viewModel = new ViewModelProvider(this).get(ClubListViewModel.class);

@@ -7,20 +7,24 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+
 import java.util.ArrayList;
 
-import delta7.clubmanager.databinding.LoginBinding;
-import delta7.clubmanager.databinding.SignBinding;
+import delta7.clubmanager.databinding.ActivitySignBinding;
+import delta7.clubmanager.databinding.ActivityLoginBinding;
 import delta7.clubmanager.model.Person;
 
 public class SignActivity extends AppCompatActivity {
 
-    SignBinding binding;
+    ActivitySignBinding binding;
+    AwesomeValidation awesomeValidation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = SignBinding.inflate(getLayoutInflater());
+        binding = ActivitySignBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ClubListViewModel viewModel = new ViewModelProvider(this).get(ClubListViewModel.class);
@@ -36,15 +40,22 @@ public class SignActivity extends AppCompatActivity {
             }
         });
 
+        awesomeValidation =new AwesomeValidation(ValidationStyle.BASIC);
+
+        awesomeValidation.addValidation(this,R.id.editTextNumberPassword,".{6,}",R.string.passwordisnotcorrect);
+        awesomeValidation.addValidation(this,R.id.editTextNumberPassword2,".{6,}",R.string.passworddoesnotmatch);
+
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = binding.editTextTextPersonName.getText().toString();
-                String id = binding.editTextTextPersonName2.getText().toString();
-                String password = binding.editTextNumberPassword.getText().toString();
+                if (awesomeValidation.validate()) {
+                    String name = binding.editTextTextPersonName.getText().toString();
+                    String id = binding.editTextTextPersonName2.getText().toString();
+                    String password = binding.editTextNumberPassword.getText().toString();
 
-                Person person = new Person(name, id, password, new ArrayList<>());
-                viewModel.signUp(person);
+                    Person person = new Person(name, id, password, new ArrayList<>());
+                    viewModel.signUp(person);
+                }
             }
         });
     }
