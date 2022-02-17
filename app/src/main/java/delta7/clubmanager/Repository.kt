@@ -78,7 +78,7 @@ class Repository {
 
     fun createClub(club: Club): Response<Club> {
         return try {
-            val container = getPersonContainer()
+            val container = getClubContainer()
             val blob = container.getBlockBlobReference(club.roomId)
 
             if (blob.exists()) {
@@ -94,7 +94,7 @@ class Repository {
 
     fun updateClub(club: Club): Response<Club> {
         return try {
-            val container = getPersonContainer()
+            val container = getClubContainer()
             val blob = container.getBlockBlobReference(club.roomId)
 
             if (!blob.exists()) {
