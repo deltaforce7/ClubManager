@@ -48,7 +48,7 @@ public class SignActivity extends AppCompatActivity {
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (awesomeValidation.validate()) {
+                if (awesomeValidation.validate() == true) {
                     String name = binding.editTextTextPersonName.getText().toString();
                     String id = binding.editTextTextPersonName2.getText().toString();
                     String password = binding.editTextNumberPassword.getText().toString();

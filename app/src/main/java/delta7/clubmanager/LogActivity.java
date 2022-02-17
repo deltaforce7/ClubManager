@@ -8,11 +8,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+
+import java.util.ArrayList;
+
 import delta7.clubmanager.databinding.ActivityLoginBinding;
+import delta7.clubmanager.model.Person;
 
 public class LogActivity extends AppCompatActivity {
 
     ActivityLoginBinding binding;
+    AwesomeValidation awesomeValidation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,11 @@ public class LogActivity extends AppCompatActivity {
             }
         });
 
+        awesomeValidation =new AwesomeValidation(ValidationStyle.BASIC);
+
+        awesomeValidation.addValidation(this,R.id.editTextTextPersonName,".{1,}",R.string.noid);
+        awesomeValidation.addValidation(this,R.id.editTextNumberPassword,".{1,}",R.string.nopassword);
+
         binding.button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,10 +58,12 @@ public class LogActivity extends AppCompatActivity {
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String id = binding.editTextTextPersonName.getText().toString();
-                String password = binding.editTextNumberPassword.getText().toString();
+                if (awesomeValidation.validate() == true) {
+                    String id = binding.editTextTextPersonName.getText().toString();
+                    String password = binding.editTextNumberPassword.getText().toString();
 
-                viewModel.login(id, password);
+                    viewModel.login(id, password);
+                }
             }
         });
     }
