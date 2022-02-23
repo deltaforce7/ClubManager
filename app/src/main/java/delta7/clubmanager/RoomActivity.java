@@ -39,6 +39,7 @@ public class RoomActivity extends AppCompatActivity {
     MemberAdapter memberAdapter;
     ActivityRoomBinding binding;
     String clubId;
+    boolean isOwner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +54,14 @@ public class RoomActivity extends AppCompatActivity {
         Observer<Club> announcementObserver = new Observer<Club>() {
             @Override
             public void onChanged(Club club) {
-                announcementAdapter = new AnnouncementAdapter(club.getAnnouncements());
-                memberAdapter = new MemberAdapter(club.getRoomMembers());
+                if (club.getAdminId().equals(Session.person.getId())) {
+                    isOwner = true;
+                    binding.button4.setVisibility(View.VISIBLE);
+                } else {
+                    binding.button4.setVisibility(View.GONE);
+                }
+                announcementAdapter = new AnnouncementAdapter(club.getAnnouncements(), isOwner);
+                memberAdapter = new MemberAdapter(club.getRoomMembers(), isOwner);
                 binding.roomRecyclerview.setAdapter(announcementAdapter);
             }
         };
@@ -106,9 +113,11 @@ public class RoomActivity extends AppCompatActivity {
 
     public static class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementViewHolder> {
         ArrayList<Announcement> data;
+        boolean isOwner;
 
-        public AnnouncementAdapter(ArrayList<Announcement> announcements) {
+        public AnnouncementAdapter(ArrayList<Announcement> announcements, boolean isOwner) {
             data = announcements;
+            this.isOwner = isOwner;
         }
 
         @NonNull
@@ -133,9 +142,11 @@ public class RoomActivity extends AppCompatActivity {
 
     public static class MemberAdapter extends RecyclerView.Adapter<MemberViewHolder> {
         ArrayList<ClubMember> data;
+        boolean isOwner;
 
-        public MemberAdapter(ArrayList<ClubMember> clubMember) {
+        public MemberAdapter(ArrayList<ClubMember> clubMember, boolean isOwner) {
             data = clubMember;
+            this.isOwner = isOwner;
         }
 
         @NonNull
@@ -144,12 +155,15 @@ public class RoomActivity extends AppCompatActivity {
             LayoutInflater layoutInflater=LayoutInflater.from(parent.getContext());
             View view = layoutInflater.inflate(R.layout.member_list,parent,false);
             MemberViewHolder viewHolder = new MemberViewHolder(view);
-            viewHolder.kick.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), data.get(viewHolder.getAdapterPosition()).getName() + " is kicked from this room", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (isOwner) {
+                viewHolder.kick.setVisibility(View.VISIBLE);
+                viewHolder.kick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(view.getContext(), data.get(viewHolder.getAdapterPosition()).getName() + " is kicked from this room", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
             return viewHolder;
         }
 
