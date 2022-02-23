@@ -61,7 +61,7 @@ public class RoomActivity extends AppCompatActivity {
                     binding.button4.setVisibility(View.GONE);
                 }
                 announcementAdapter = new AnnouncementAdapter(club.getAnnouncements(), isOwner);
-                memberAdapter = new MemberAdapter(club.getRoomMembers(), isOwner);
+                memberAdapter = new MemberAdapter(club.getRoomMembers(), isOwner, viewModel, clubId);
                 binding.roomRecyclerview.setAdapter(announcementAdapter);
             }
         };
@@ -143,10 +143,14 @@ public class RoomActivity extends AppCompatActivity {
     public static class MemberAdapter extends RecyclerView.Adapter<MemberViewHolder> {
         ArrayList<ClubMember> data;
         boolean isOwner;
+        ClubListViewModel viewModel;
+        String clubId;
 
-        public MemberAdapter(ArrayList<ClubMember> clubMember, boolean isOwner) {
+        public MemberAdapter(ArrayList<ClubMember> clubMember, boolean isOwner, ClubListViewModel viewModel, String clubId) {
             data = clubMember;
             this.isOwner = isOwner;
+            this.viewModel = viewModel;
+            this.clubId = clubId;
         }
 
         @NonNull
@@ -160,6 +164,7 @@ public class RoomActivity extends AppCompatActivity {
                 viewHolder.kick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        viewModel.kickMember(clubId, data.get(viewHolder.getAdapterPosition()).getId());
                         Toast.makeText(view.getContext(), data.get(viewHolder.getAdapterPosition()).getName() + " is kicked from this room", Toast.LENGTH_SHORT).show();
                     }
                 });
