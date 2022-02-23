@@ -80,6 +80,38 @@ class ClubListViewModel: ViewModel() {
         }
     }
 
+    fun kickMember(clubId: String, memberId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val response = repository.getClub(clubId)) {
+                is Response.Success<Club> -> {
+                    val data = response.data!!
+                    val member = data.roomMembers.find {
+                        it.id == memberId
+                    }
+
+                    data.roomMembers.remove(member)
+                    repository.updateClub(data)
+
+                    when (val memberResponse = repository.getPerson(memberId)) {
+                        is Response.Success<Person> -> {
+                            val personData = memberResponse.data!!
+                            val joinedClub = personData.joinedClubs.find {
+                                it.roomId == clubId
+                            }
+                            personData.joinedClubs.remove(joinedClub)
+                            repository.updatePerson(personData)
+                            clubLiveData.postValue(data)
+                        }
+                        else -> {
+
+                        }
+                    }
+                }
+                else -> createClub.postValue(ViewState.FAILURE)
+            }
+        }
+    }
+
     fun login(id: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
             when (val response = repository.getPerson(id)) {
