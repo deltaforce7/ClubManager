@@ -4,7 +4,7 @@ data class Person(
     val name: String,
     val id: String,
     val password: String,
-    val joinedClubs: MutableList<JoinedClub> = mutableListOf(),
+    val joinedClubs: ArrayList<JoinedClub> = ArrayList(),
 ): Model
 
 data class JoinedClub(
@@ -16,8 +16,8 @@ data class Club(
     val roomId: String,
     val roomName: String,
     val adminId: String,
-    val roomNotice: MutableList<String> = mutableListOf(),
-    val roomMembers: MutableList<ClubMember> = mutableListOf(),
+    val announcements: ArrayList<Announcement> = ArrayList(),
+    val roomMembers: ArrayList<ClubMember> = ArrayList(),
 ): Model
 
 data class ClubMember(

@@ -3,6 +3,7 @@ package delta7.clubmanager
 import com.google.gson.Gson
 import com.microsoft.azure.storage.CloudStorageAccount
 import com.microsoft.azure.storage.blob.CloudBlobContainer
+import delta7.clubmanager.model.Announcement
 import delta7.clubmanager.model.Club
 import delta7.clubmanager.model.Model
 import delta7.clubmanager.model.Person
@@ -61,7 +62,7 @@ class Repository {
     }
 
 
-    fun getClubs(clubId: String): Response<Club> {
+    fun getClub(clubId: String): Response<Club> {
         return try {
             val blobContainer = getClubContainer()
             val blob = blobContainer.getBlockBlobReference(clubId)
@@ -108,6 +109,18 @@ class Repository {
         }
     }
 
+    fun updateAnnouncement(clubId: String, announcement: Announcement): Response<Club> {
+        return try {
+            val container = getClubContainer()
+            val blob = container.getBlockBlobReference(clubId)
+            val club = gson.fromJson(blob.downloadText(), Club::class.java)
+            club.announcements.add(announcement)
+            blob.uploadText(gson.toJson(club))
+            Response.Success(club)
+        } catch (e: Exception) {
+            Response.Failure()
+        }
+    }
 
     private fun getPersonContainer(): CloudBlobContainer {
         val account = CloudStorageAccount.parse(Constant.StorageConnectionString)

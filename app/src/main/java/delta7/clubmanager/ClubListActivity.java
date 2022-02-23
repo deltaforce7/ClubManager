@@ -15,9 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Array;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 
@@ -34,6 +36,8 @@ import delta7.clubmanager.model.JoinedClub;
 public class ClubListActivity extends AppCompatActivity {
 
     ActivityClubListBinding binding;
+    public static String ROOM_ID = "roomId";
+    public static String ROOM_NAME = "roomName";
     AwesomeValidation awesomeValidation;
 
     @Override
@@ -46,8 +50,11 @@ public class ClubListActivity extends AppCompatActivity {
 
         viewModel.getCreateClub().observe(this, viewState -> {
             if (viewState == ViewState.SUCCESS) {
-                Intent i = new Intent(ClubListActivity.this, RoomActivity.class);
-                startActivity(i);
+                Intent intent = new Intent(ClubListActivity.this, RoomActivity.class);
+                Club club = viewModel.getClubLiveData().getValue();
+                intent.putExtra(ROOM_ID, club.getRoomId());
+                intent.putExtra(ROOM_NAME, club.getRoomName());
+                startActivity(intent);
             } else if (viewState == ViewState.ALREADY_EXIST) {
                 Toast.makeText(this, "Room code already exists", Toast.LENGTH_SHORT).show();
             } else {
@@ -62,8 +69,11 @@ public class ClubListActivity extends AppCompatActivity {
 
         viewModel.getJoinClub().observe(this, viewState -> {
             if (viewState == ViewState.SUCCESS) {
-                Intent i = new Intent(ClubListActivity.this, RoomActivity.class);
-                startActivity(i);
+                Intent intent = new Intent(ClubListActivity.this, RoomActivity.class);
+                Club club = viewModel.getClubLiveData().getValue();
+                intent.putExtra(ROOM_ID, club.getRoomId());
+                intent.putExtra(ROOM_NAME, club.getRoomName());
+                startActivity(intent);
             } else if (viewState == ViewState.NOT_EXIST) {
                 Toast.makeText(this, "Room doesn't exist", Toast.LENGTH_SHORT).show();
             } else {
@@ -77,8 +87,9 @@ public class ClubListActivity extends AppCompatActivity {
         awesomeValidation.addValidation(this,R.id.namee,".{1,}",R.string.plstypename);
 
         binding.rooms.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-//        RoomsAdapter adapter= new RoomsAdapter(this, );
-//        binding.rooms.setAdapter(adapter);
+        binding.rooms.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        RoomsAdapter adapter= new RoomsAdapter(this, Session.person.getJoinedClubs());
+        binding.rooms.setAdapter(adapter);
 
         binding.createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,11 +140,20 @@ public class ClubListActivity extends AppCompatActivity {
                                 if (dialogBinding.code.getText().toString().length() == 0 || dialogBinding.code.getText().toString().length() == 0) {
                                     // Show Toast
                                     Toast.makeText(getApplicationContext(), "Type in room code and room name.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    String code = dialogBinding.code.getText().toString();
-
-                                    viewModel.joinClub(code);
+                                    return;
                                 }
+                                String code = dialogBinding.code.getText().toString();
+
+                                ArrayList<JoinedClub> joinedClubs = Session.person.getJoinedClubs();
+                                for (int i = 0; i < joinedClubs.size(); i++) {
+                                    JoinedClub joinedClub = joinedClubs.get(i);
+                                    if (joinedClub.getRoomId().equals(code)) {
+                                        Toast.makeText(getApplicationContext(), "You already joined this room", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+
+                                viewModel.joinClub(code);
                             }
                         });
                 builder.create().show();
@@ -141,7 +161,7 @@ public class ClubListActivity extends AppCompatActivity {
         });
     }
 
-    public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> {
+    public static class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> {
         ArrayList<JoinedClub> data;
         Context context;
 
@@ -156,19 +176,24 @@ public class ClubListActivity extends AppCompatActivity {
         {
             LayoutInflater layoutInflater=LayoutInflater.from(parent.getContext());
             View view = layoutInflater.inflate(R.layout.rooms_list,parent,false);
-            RoomsAdapter.ViewHolder viewHolder= new RoomsAdapter.ViewHolder(view);
+            ViewHolder viewHolder =  new ViewHolder(view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(parent.getContext(), RoomActivity.class);
+                    intent.putExtra(ROOM_ID, data.get(viewHolder.getAdapterPosition()).getRoomId());
+                    intent.putExtra(ROOM_NAME, data.get(viewHolder.getAdapterPosition()).getRoomName());
+                    parent.getContext().startActivity(intent);
+                }
+            });
+
             return viewHolder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull RoomsAdapter.ViewHolder holder, int position) {
-//            holder.nameTextView.setText(data.get(position).getName());
-            holder.nameTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(context, "Clicked on"+data.get(position), Toast.LENGTH_SHORT).show();
-                }
-            });
+            holder.roomName.setText(data.get(position).getRoomName());
         }
 
         @Override
@@ -179,18 +204,19 @@ public class ClubListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            public TextView nameTextView;
-            public Button messageButton;
-
+            public TextView roomName;
 
             public ViewHolder(View itemView) {
-
                 super(itemView);
-
-                nameTextView = (TextView) itemView.findViewById(R.id.contact_name);
-                messageButton = (Button) itemView.findViewById(R.id.message_button);
+                roomName = itemView.findViewById(R.id.room_name);
             }
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        RoomsAdapter adapter= new RoomsAdapter(this, Session.person.getJoinedClubs());
+        binding.rooms.setAdapter(adapter);
+    }
 }

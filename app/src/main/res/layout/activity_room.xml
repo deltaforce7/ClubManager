@@ -6,12 +6,12 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -25,9 +25,9 @@
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvContacts"
-        android:layout_width="409dp"
-        android:layout_height="630dp"
+        android:id="@+id/room_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="100dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
