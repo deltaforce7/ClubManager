@@ -1,7 +1,11 @@
 package delta7.clubmanager;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import delta7.clubmanager.databinding.ActivityRoomBinding;
+import delta7.clubmanager.databinding.Addon2Binding;
+import delta7.clubmanager.databinding.Addon4Binding;
+import delta7.clubmanager.model.Club;
 
 
 public class RoomActivity extends AppCompatActivity {
@@ -38,7 +45,27 @@ String announcements[]={"be kind","do what you're asked to do","hello","12345"};
         adapter= new ContactsAdapter(this,contacts);
         binding.rvContacts.setAdapter(adapter);
 
+        binding.button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(RoomActivity.this);
+                Addon4Binding dialogBinding = Addon4Binding.inflate(getLayoutInflater());
 
+                builder.setView(dialogBinding.getRoot())
+                        // Add action buttons
+                        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (dialogBinding.editTextTextPersonName3.getText().toString().length() == 0) {
+                                    // Show Toast
+                                    Toast.makeText(getApplicationContext(), "Type in announcements.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+
+                builder.create().show();
+            }
+        });
     }
-
 }

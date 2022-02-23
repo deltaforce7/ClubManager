@@ -1,7 +1,11 @@
 <resources>
-    <string name="app_name">ClubManager</string>
+    <string name="app_name">ClubWorks</string>
     <string name="passwordisnotcorrect">password should be at least 6 characters</string>
     <string name="passworddoesnotmatch">password does not match</string>
     <string name="noid">Type in ID</string>
     <string name="nopassword">Type in password</string>
+    <string name="createname">Type in name</string>
+    <string name="createid">Type in ID</string>
+    <string name="plstypecode">Type in room code</string>
+    <string name="plstypename">Type in room name</string>
 </resources>

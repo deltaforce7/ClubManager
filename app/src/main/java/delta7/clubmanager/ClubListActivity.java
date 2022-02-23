@@ -18,6 +18,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +34,7 @@ import delta7.clubmanager.model.JoinedClub;
 public class ClubListActivity extends AppCompatActivity {
 
     ActivityClubListBinding binding;
+    AwesomeValidation awesomeValidation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,11 @@ public class ClubListActivity extends AppCompatActivity {
             }
         });
 
+        awesomeValidation =new AwesomeValidation(ValidationStyle.BASIC);
+
+        awesomeValidation.addValidation(this,R.id.code,".{1,}",R.string.plstypecode);
+        awesomeValidation.addValidation(this,R.id.namee,".{1,}",R.string.plstypename);
+
         viewModel.getJoinClub().observe(this, viewState -> {
             if (viewState == ViewState.SUCCESS) {
                 Intent i = new Intent(ClubListActivity.this, RoomActivity.class);
@@ -61,6 +70,11 @@ public class ClubListActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        awesomeValidation =new AwesomeValidation(ValidationStyle.BASIC);
+
+        awesomeValidation.addValidation(this,R.id.code,".{1,}",R.string.plstypecode);
+        awesomeValidation.addValidation(this,R.id.namee,".{1,}",R.string.plstypename);
 
         binding.rooms.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 //        RoomsAdapter adapter= new RoomsAdapter(this, );
@@ -81,10 +95,15 @@ public class ClubListActivity extends AppCompatActivity {
                         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                String code = dialogBinding.code.getText().toString();
-                                String name = dialogBinding.namee.getText().toString();
-                                Club club = new Club(code, name, Session.person.getId(), new ArrayList<>(), new ArrayList<>());
-                                viewModel.createClub(club);
+                                if (dialogBinding.code.getText().toString().length() == 0 || dialogBinding.namee.getText().toString().length() == 0) {
+                                    // Show Toast
+                                    Toast.makeText(getApplicationContext(), "Type in room code and room name.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String code = dialogBinding.code.getText().toString();
+                                    String name = dialogBinding.namee.getText().toString();
+                                    Club club = new Club(code, name, Session.person.getId(), new ArrayList<>(), new ArrayList<>());
+                                    viewModel.createClub(club);
+                                }
                             }
                         });
 
@@ -107,9 +126,14 @@ public class ClubListActivity extends AppCompatActivity {
                         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                String code = dialogBinding.code.getText().toString();
+                                if (dialogBinding.code.getText().toString().length() == 0 || dialogBinding.code.getText().toString().length() == 0) {
+                                    // Show Toast
+                                    Toast.makeText(getApplicationContext(), "Type in room code and room name.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String code = dialogBinding.code.getText().toString();
 
-                                viewModel.joinClub(code);
+                                    viewModel.joinClub(code);
+                                }
                             }
                         });
                 builder.create().show();

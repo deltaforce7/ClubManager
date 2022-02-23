@@ -44,6 +44,9 @@ public class SignActivity extends AppCompatActivity {
 
         awesomeValidation.addValidation(this,R.id.editTextNumberPassword,".{6,}",R.string.passwordisnotcorrect);
         awesomeValidation.addValidation(this,R.id.editTextNumberPassword2,".{6,}",R.string.passworddoesnotmatch);
+        awesomeValidation.addValidation(this,R.id.editTextTextPersonName,".{1,}",R.string.createname);
+        awesomeValidation.addValidation(this,R.id.editTextTextPersonName2,".{1,}",R.string.createid);
+
 
         binding.button.setOnClickListener(new View.OnClickListener() {
             @Override
