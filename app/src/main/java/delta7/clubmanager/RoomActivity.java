@@ -20,7 +20,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 import delta7.clubmanager.databinding.ActivityRoomBinding;
@@ -73,7 +75,6 @@ public class RoomActivity extends AppCompatActivity {
             }
         });
 
-
         binding.roomRecyclerview.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         binding.roomRecyclerview.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         binding.button4.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +91,10 @@ public class RoomActivity extends AppCompatActivity {
                                 if (dialogBinding.editTextTextPersonName3.getText().toString().length() == 0) {
                                     // Show Toast
                                     Toast.makeText(getApplicationContext(), "Type in announcements.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String dateTime = SimpleDateFormat.getDateTimeInstance().format(new Date());
+                                    Announcement announcement = new Announcement(dialogBinding.editTextTextPersonName3.getText().toString(), dateTime);
+                                    viewModel.updateClubAnnouncement(clubId, announcement);
                                 }
                             }
                         });
