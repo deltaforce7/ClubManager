@@ -48,6 +48,7 @@ public class RoomActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         clubId = getIntent().getStringExtra(ClubListActivity.ROOM_ID);
+        binding.textView2.setText(getIntent().getStringExtra(ClubListActivity.ROOM_NAME));
         ClubListViewModel viewModel = new ViewModelProvider(this).get(ClubListViewModel.class);
         viewModel.getClub(clubId);
 
@@ -118,6 +119,10 @@ public class RoomActivity extends AppCompatActivity {
         public AnnouncementAdapter(ArrayList<Announcement> announcements, boolean isOwner) {
             data = announcements;
             this.isOwner = isOwner;
+            data = new ArrayList<>();
+            for (int i = announcements.size() - 1; i >= 0; i--) {
+                data.add(announcements.get(i));
+            }
         }
 
         @NonNull
